@@ -1,4 +1,4 @@
-From flask import Flask, request, send_from_directory, make_response
+from flask import Flask, request, send_from_directory, make_response
 from flask_cors import CORS
 import yagmail
 import os
