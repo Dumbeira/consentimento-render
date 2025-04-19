@@ -1,4 +1,3 @@
-
 from flask import Flask, request, send_from_directory, make_response
 from flask_cors import CORS
 import yagmail
@@ -8,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 EMAIL = 'mwvmedicina80@gmail.com'
-SENHA = 'SUA_SENHA_DE_APP_AQUI'
+SENHA = 'pbhg pedb rskz awhv'
 
 @app.route('/')
 def index():
