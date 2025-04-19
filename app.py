@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, make_response
+From flask import Flask, request, send_from_directory, make_response
 from flask_cors import CORS
 import yagmail
 import os
@@ -11,8 +11,7 @@ SENHA = 'pbhg pedb rskz awhv'
 
 @app.route('/')
 def index():
-    return make_response("""
-<!DOCTYPE html>
+    return make_response("""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -80,7 +79,7 @@ Fui informado(a) de que, em casos excepcionais, de risco iminente à minha integ
 
 Declaro que todas as minhas dúvidas foram esclarecidas e que estou de acordo com o tratamento proposto.
 
-Local: Bom Sucesso, 19 de abril de 2025
+Local: Bom Sucesso, 19 de April de 2025
   `;
 
   document.getElementById('texto').value = textoPadrao;
@@ -116,6 +115,7 @@ Local: Bom Sucesso, 19 de abril de 2025
 
   function limparAssinatura() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
   }
 
   async function enviar() {
@@ -146,15 +146,15 @@ Local: Bom Sucesso, 19 de abril de 2025
     document.getElementById('status').innerText = "Enviando consentimento...";
 
     try {
-      const response = await fetch("https://consentimento-render.onrender.com/enviar-consentimento", {
+      const response = await fetch("/enviar-consentimento", {
         method: 'POST',
         body: formData
       });
-
+      const resultado = await response.json();
       if (response.ok) {
-        document.getElementById('status').innerText = "Consentimento enviado com sucesso!";
+        document.getElementById('status').innerText = resultado.mensagem;
       } else {
-        document.getElementById('status').innerText = "Erro ao enviar o consentimento.";
+        document.getElementById('status').innerText = resultado.mensagem || "Erro ao enviar o consentimento.";
       }
     } catch (error) {
       document.getElementById('status').innerText = "Erro ao conectar com o servidor.";
@@ -163,13 +163,12 @@ Local: Bom Sucesso, 19 de abril de 2025
 </script>
 
 </body>
-</html>
-""", 200)
+</html>""", 200)
 
 @app.route('/enviar-consentimento', methods=['POST'])
 def enviar_email():
     if 'pdf' not in request.files:
-        return 'Arquivo PDF não encontrado.', 400
+        return {'mensagem': 'Arquivo PDF não encontrado.'}, 400
 
     email_paciente = request.form.get('emailPaciente')
     arquivo = request.files['pdf']
@@ -185,10 +184,10 @@ def enviar_email():
             attachments=caminho_temp
         )
         print("E-mail enviado com sucesso.")
-        return 'PDF enviado com sucesso!', 200
+        return {'mensagem': 'PDF enviado com sucesso!'}, 200
     except Exception as e:
         print("Erro ao enviar e-mail:", str(e))
-        return 'Erro ao enviar e-mail.', 500
+        return {'mensagem': f'Erro ao enviar e-mail: {str(e)}'}, 500
     finally:
         if os.path.exists(caminho_temp):
             os.remove(caminho_temp)
