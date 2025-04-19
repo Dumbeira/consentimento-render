@@ -35,7 +35,6 @@ def enviar_email():
         if os.path.exists(caminho_temp):
             os.remove(caminho_temp)
 
-# 🔧 Esta parte abaixo garante compatibilidade com Render e ambiente local
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
