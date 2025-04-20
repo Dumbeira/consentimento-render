@@ -35,7 +35,7 @@ def index():
 
 <textarea id="texto" readonly></textarea>
 
-<canvas id="assinatura" width="600" height="100"></canvas>
+<canvas id="assinatura" width="400" height="150"></canvas>
 <button onclick="limparAssinatura()">Limpar Assinatura</button>
 <button onclick="enviar()">Enviar Consentimento</button>
 <p id="status"></p>
@@ -142,11 +142,11 @@ const alturaTexto = linhas.length * lineHeight;
 pdf.text(texto, 10, 10, { maxWidth: 190 });
 
 // Calcula onde colocar a assinatura
-const posY = 20 + alturaTexto + 100;
+const posY = 10 + alturaTexto + 10;
 
 const assinatura = document.getElementById('assinatura');
 const imgData = assinatura.toDataURL('image/png');
-pdf.addImage(imgData, 'PNG', 20, posY, 150, 60);
+pdf.addImage(imgData, 'PNG', 10, posY, 180, 40);
 
     const blob = pdf.output('blob');
     const formData = new FormData();
