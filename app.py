@@ -35,7 +35,7 @@ def index():
 
 <textarea id="texto" readonly></textarea>
 
-<canvas id="assinatura" width="400" height="150"></canvas>
+<canvas id="assinatura" width="600" height="100"></canvas>
 <button onclick="limparAssinatura()">Limpar Assinatura</button>
 <button onclick="enviar()">Enviar Consentimento</button>
 <p id="status"></p>
