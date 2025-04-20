@@ -142,11 +142,11 @@ const alturaTexto = linhas.length * lineHeight;
 pdf.text(texto, 10, 10, { maxWidth: 190 });
 
 // Calcula onde colocar a assinatura
-const posY = 10 + alturaTexto + 40;
+const posY = 10 + alturaTexto + 20;
 
 const assinatura = document.getElementById('assinatura');
 const imgData = assinatura.toDataURL('image/png');
-pdf.addImage(imgData, 'PNG', 15, posY, 160, 40);
+pdf.addImage(imgData, 'PNG', 10, posY, 180, 40);
 
     const blob = pdf.output('blob');
     const formData = new FormData();
