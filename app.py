@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory, make_response
+from flask import Flask, request, make_response
 from flask_cors import CORS
 import yagmail
 import os
@@ -12,14 +12,14 @@ SENHA = 'pbhg pedb rskz awhv'
 @app.route('/')
 def index():
     return make_response("""<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang='pt-BR'>
 <head>
-  <meta charset="UTF-8">
+  <meta charset='UTF-8'>
   <title>Consentimento Informado</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 30px; line-height: 1.6; }
     h2 { text-align: center; }
-    canvas { border: 1px solid #000; display: block; margin: 20px auto; }
+    canvas { border: 1px solid #000; display: block; margin: 20px auto; background-color: #fff; }
     input, button { display: block; margin: 10px auto; padding: 10px; width: 90%; max-width: 500px; }
     textarea { width: 100%; height: 450px; margin-top: 20px; white-space: pre-wrap; }
   </style>
@@ -28,19 +28,19 @@ def index():
 
 <h2>CONSENTIMENTO INFORMADO PARA TRATAMENTO PSIQUIÁTRICO</h2>
 
-<input type="text" id="nome" placeholder="Nome completo do paciente" required>
-<input type="text" id="nascimento" placeholder="Data de nascimento" required>
-<input type="text" id="responsavel" placeholder="Responsável legal (se aplicável)">
-<input type="email" id="email" placeholder="E-mail do paciente" required>
+<input type='text' id='nome' placeholder='Nome completo do paciente' required>
+<input type='text' id='nascimento' placeholder='Data de nascimento' required>
+<input type='text' id='responsavel' placeholder='Responsável legal (se aplicável)'>
+<input type='email' id='email' placeholder='E-mail do paciente' required>
 
-<textarea id="texto" readonly></textarea>
+<textarea id='texto' readonly></textarea>
 
-<canvas id="assinatura" width="480" height="180"></canvas>
-<button onclick="limparAssinatura()">Limpar Assinatura</button>
-<button onclick="enviar()">Enviar Consentimento</button>
-<p id="status"></p>
+<canvas id='assinatura' width='600' height='250'></canvas>
+<button onclick='limparAssinatura()'>Limpar Assinatura</button>
+<button onclick='enviar()'>Enviar Consentimento</button>
+<p id='status'></p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'></script>
 <script>
   const canvas = document.getElementById('assinatura');
   const ctx = canvas.getContext('2d');
@@ -79,7 +79,7 @@ Fui informado(a) de que, em casos excepcionais, de risco iminente à minha integ
 
 Declaro que todas as minhas dúvidas foram esclarecidas e que estou de acordo com o tratamento proposto.
 
-Local: Bom Sucesso, 19 de April de 2025
+Local: Bom Sucesso, 19 de abril de 2025
   `;
 
   document.getElementById('texto').value = textoPadrao;
@@ -95,27 +95,9 @@ Local: Bom Sucesso, 19 de April de 2025
     }
   });
   canvas.addEventListener('mouseup', () => desenhando = false);
-  canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    desenhando = true;
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-  });
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (desenhando) {
-      const rect = canvas.getBoundingClientRect();
-      const touch = e.touches[0];
-      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-      ctx.stroke();
-    }
-  });
-  canvas.addEventListener('touchend', () => desenhando = false);
 
   function limparAssinatura() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
   }
 
   async function enviar() {
@@ -130,23 +112,16 @@ Local: Bom Sucesso, 19 de April de 2025
       .replace("{RESPONSAVEL}", responsavel || "-");
 
     const { jsPDF } = window.jspdf;
-const pdf = new jsPDF();
-pdf.setFontSize(12);
-
-// Calcula a altura do texto dinamicamente
-const lineHeight = 7;
-const linhas = texto.split('\n');
-const alturaTexto = linhas.length * lineHeight;
-
-// Adiciona o texto
-pdf.text(texto, 10, 10, { maxWidth: 190 });
-
-// Calcula onde colocar a assinatura
-const posY = 10 + alturaTexto + 10;
-
-const assinatura = document.getElementById('assinatura');
-const imgData = assinatura.toDataURL('image/png');
-pdf.addImage(imgData, 'PNG', 10, posY, 180, 50);
+    const pdf = new jsPDF();
+    pdf.setFontSize(12);
+    const linhas = texto.split('\n');
+    let y = 10;
+    linhas.forEach(l => {
+      pdf.text(l, 10, y);
+      y += 7;
+    });
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', 10, y + 10, 180, 50);
 
     const blob = pdf.output('blob');
     const formData = new FormData();
@@ -160,11 +135,10 @@ pdf.addImage(imgData, 'PNG', 10, posY, 180, 50);
         method: 'POST',
         body: formData
       });
-      const resultado = await response.json();
       if (response.ok) {
-        document.getElementById('status').innerText = resultado.mensagem;
+        document.getElementById('status').innerText = "Consentimento enviado com sucesso!";
       } else {
-        document.getElementById('status').innerText = resultado.mensagem || "Erro ao enviar o consentimento.";
+        document.getElementById('status').innerText = "Erro ao enviar o consentimento.";
       }
     } catch (error) {
       document.getElementById('status').innerText = "Erro ao conectar com o servidor.";
@@ -173,12 +147,12 @@ pdf.addImage(imgData, 'PNG', 10, posY, 180, 50);
 </script>
 
 </body>
-</html>""", 200)
+</html>""")
 
 @app.route('/enviar-consentimento', methods=['POST'])
 def enviar_email():
     if 'pdf' not in request.files:
-        return {'mensagem': 'Arquivo PDF não encontrado.'}, 400
+        return 'Arquivo PDF não encontrado.', 400
 
     email_paciente = request.form.get('emailPaciente')
     arquivo = request.files['pdf']
@@ -194,10 +168,10 @@ def enviar_email():
             attachments=caminho_temp
         )
         print("E-mail enviado com sucesso.")
-        return {'mensagem': 'PDF enviado com sucesso!'}, 200
+        return 'PDF enviado com sucesso!', 200
     except Exception as e:
         print("Erro ao enviar e-mail:", str(e))
-        return {'mensagem': f'Erro ao enviar e-mail: {str(e)}'}, 500
+        return 'Erro ao enviar e-mail.', 500
     finally:
         if os.path.exists(caminho_temp):
             os.remove(caminho_temp)
